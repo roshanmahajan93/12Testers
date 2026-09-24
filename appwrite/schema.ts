@@ -68,7 +68,6 @@ export const TABLE_DEFS: TableDef[] = [
       str('country', 56),
       { type: 'varchar', key: 'languages', size: 24, array: true },
       { type: 'varchar', key: 'timezone', size: 64, default: 'UTC' },
-      str('expoPushToken', 200),
       text('notificationPrefs'),
       int('credits', 0, 0),
       bool('isPro'),

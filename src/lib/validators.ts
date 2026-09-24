@@ -64,7 +64,6 @@ export const updateProfileSchema = z
     country: z.string().trim().min(2).max(56).nullable(),
     languages: z.array(z.string().trim().min(2).max(24)).max(6),
     timezone: z.string().trim().min(1).max(64),
-    expoPushToken: z.string().trim().max(200).nullable(),
     notificationPrefs: notificationPrefsSchema,
     companyName: z.string().trim().max(60).nullable(),
     deviceModel: z.string().trim().min(2).max(80),

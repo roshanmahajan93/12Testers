@@ -20,7 +20,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: APP_NAME,
   slug: 'twelvetesters',
-  owner: process.env.EAS_OWNER,
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
@@ -75,6 +74,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         icon: './assets/images/notification-icon.png',
         color: '#7C5CFF',
+        // FCM pushes sent by Appwrite Messaging land in this channel (created in-app).
+        defaultChannel: 'default',
       },
     ],
     [
@@ -89,10 +90,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   experiments: {
     typedRoutes: true,
     reactCompiler: true,
-  },
-  extra: {
-    eas: {
-      projectId: process.env.EAS_PROJECT_ID,
-    },
   },
 });

@@ -28,7 +28,6 @@ export default handler(async ({ admin, body, userId }) => {
     country: null,
     languages: [],
     timezone,
-    expoPushToken: null,
     notificationPrefs: null,
     credits: 0,
     isPro: false,

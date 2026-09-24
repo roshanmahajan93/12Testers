@@ -61,7 +61,6 @@ export interface ProfileRow {
   country: string | null;
   languages: string[];
   timezone: string;
-  expoPushToken: string | null;
   /** JSON-encoded NotificationPrefs (Appwrite has no nested object column). */
   notificationPrefs: string | null;
   // developer

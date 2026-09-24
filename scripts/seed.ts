@@ -10,7 +10,7 @@
  * sign in to any of them with email OTP. Never run against production.
  */
 import { config as loadEnv } from 'dotenv';
-import { AppwriteException, Client, Permission, Role, Storage, TablesDB, Users } from 'node-appwrite';
+import { AppwriteException, Client, Messaging, Permission, Role, Storage, TablesDB, Users } from 'node-appwrite';
 
 import { applyCredits } from '../appwrite/functions/_shared/ledger';
 import { appPermissions, ensureTodayTask, planRowId, testerDeviceLabel } from '../appwrite/functions/_shared/lifecycle';
@@ -37,7 +37,13 @@ process.env.APPWRITE_DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID 
 const databaseId = process.env.APPWRITE_DATABASE_ID;
 
 const client = new Client().setEndpoint(endpoint).setProject(projectId).setKey(apiKey);
-const admin: Admin = { client, db: new TablesDB(client), users: new Users(client), storage: new Storage(client) };
+const admin: Admin = {
+  client,
+  db: new TablesDB(client),
+  users: new Users(client),
+  storage: new Storage(client),
+  messaging: new Messaging(client),
+};
 const cfg = DEFAULT_CONFIG;
 
 const [local, domain] = seedEmail.split('@');
@@ -70,7 +76,6 @@ function profile(userId: string, role: UserRole, name: string, i: number): Profi
     country: ['India', 'Brazil', 'Germany', 'Kenya', 'USA'][i % 5] ?? 'India',
     languages: ['English'],
     timezone: 'UTC',
-    expoPushToken: null,
     notificationPrefs: null,
     credits: 0,
     isPro: false,

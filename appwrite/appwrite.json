@@ -25,7 +25,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/setRole"
     },
@@ -53,7 +55,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/updateProfile"
     },
@@ -80,7 +84,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/saveApp"
     },
@@ -107,7 +113,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/listApp"
     },
@@ -134,7 +142,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/manageApp"
     },
@@ -161,7 +171,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/claimTest"
     },
@@ -188,7 +200,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/completeDailyTask"
     },
@@ -215,7 +229,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/submitFeedback"
     },
@@ -242,7 +258,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/moderate"
     },
@@ -270,7 +288,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/report"
     },
@@ -298,7 +318,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/getLeaderboard"
     },
@@ -326,7 +348,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/deleteAccount"
     },
@@ -351,7 +375,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/generateDailyTasks"
     },
@@ -376,7 +402,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/dropoutMonitor"
     },
@@ -403,7 +431,9 @@
         "tables.read",
         "files.read",
         "files.write",
-        "buckets.read"
+        "buckets.read",
+        "messages.write",
+        "targets.read"
       ],
       "path": "functions/dist/revenuecatWebhook"
     }

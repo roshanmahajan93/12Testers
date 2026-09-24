@@ -1,5 +1,6 @@
 import { toAppError } from '@/lib/errors';
 import { callFunction, clearJwtCache, disconnectRealtime, FUNCTIONS } from '@/services/appwrite';
+import { kv } from '@/store/storage';
 import { cancelAllLocalReminders } from '@/services/notifications/reminders';
 import { logoutPurchases } from '@/services/purchases';
 import { api } from '@/store/api';
@@ -13,6 +14,9 @@ export const accountApi = api.injectEndpoints({
       async queryFn(_arg, { dispatch }) {
         try {
           await callFunction(FUNCTIONS.deleteAccount, {});
+          // The user (and its push targets) no longer exist server-side; forget the local ids.
+          kv.remove('push.targetId');
+          kv.remove('push.token');
           await Promise.allSettled([disconnectRealtime(), logoutPurchases(), cancelAllLocalReminders()]);
           clearJwtCache();
           dispatch(signedOut());

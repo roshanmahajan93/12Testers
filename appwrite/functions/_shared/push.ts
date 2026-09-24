@@ -1,16 +1,17 @@
 /**
- * sendPush: writes an in-app notification row for each user and delivers an Expo push to users
- * who have a token and haven't muted that category. Batches 100 messages per Expo request and
- * clears tokens Expo reports as `DeviceNotRegistered`.
+ * sendPush: writes an in-app notification row for each user and delivers a push through
+ * **Appwrite Messaging → Firebase Cloud Messaging** (free). No Expo push service is used.
+ *
+ * Devices register their FCM token as an Appwrite push target (`account.createPushTarget`), so we
+ * address users by id and Appwrite fans out to all of their devices. Users who muted a category
+ * (notificationPrefs) still get the in-app row, but no push.
  */
-import { Permission, Role } from 'node-appwrite';
+import { ID, Permission, Role } from 'node-appwrite';
 
 import type { NotificationData, NotificationPrefs, ProfileRow } from '../../../src/lib/domain/types';
 
-import { createRow, getRowOrNull, TABLES, updateRow } from './db';
+import { createRow, getRowOrNull, TABLES } from './db';
 import type { Admin } from './runtime';
-
-const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
 
 export type PushCategory = keyof Pick<NotificationPrefs, 'dailyTasks' | 'reminders' | 'testerActivity' | 'feedback'>;
 
@@ -22,10 +23,8 @@ export interface PushMessage {
   category?: PushCategory;
 }
 
-interface ExpoTicket {
-  status: 'ok' | 'error';
-  details?: { error?: string };
-}
+/** Appwrite caps the recipients of a single message; stay well under it. */
+const MAX_USERS_PER_MESSAGE = 100;
 
 function prefsAllow(raw: string | null, category?: PushCategory): boolean {
   if (!category || !raw) return true;
@@ -37,9 +36,16 @@ function prefsAllow(raw: string | null, category?: PushCategory): boolean {
   }
 }
 
+/** FCM data payloads must be string → string. */
+function toStringMap(data: NotificationData | undefined): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(data ?? {})) if (v !== undefined && v !== null) out[k] = String(v);
+  return out;
+}
+
 export async function sendPush(admin: Admin, userIds: string[], msg: PushMessage, log?: (m: string) => void): Promise<void> {
   const unique = [...new Set(userIds)];
-  const targets: { userId: string; token: string }[] = [];
+  const recipients: string[] = [];
 
   for (const userId of unique) {
     await createRow(
@@ -49,42 +55,22 @@ export async function sendPush(admin: Admin, userIds: string[], msg: PushMessage
       [Permission.read(Role.user(userId)), Permission.update(Role.user(userId)), Permission.delete(Role.user(userId))],
     );
     const profile = await getRowOrNull<ProfileRow>(admin, TABLES.profiles, userId);
-    if (profile?.expoPushToken && prefsAllow(profile.notificationPrefs, msg.category)) {
-      targets.push({ userId, token: profile.expoPushToken });
-    }
+    if (profile && prefsAllow(profile.notificationPrefs, msg.category)) recipients.push(userId);
   }
 
-  for (let i = 0; i < targets.length; i += 100) {
-    const batch = targets.slice(i, i + 100);
-    const headers: Record<string, string> = { 'content-type': 'application/json', accept: 'application/json' };
-    if (process.env.EXPO_ACCESS_TOKEN) headers.authorization = `Bearer ${process.env.EXPO_ACCESS_TOKEN}`;
+  for (let i = 0; i < recipients.length; i += MAX_USERS_PER_MESSAGE) {
     try {
-      const res = await fetch(EXPO_PUSH_URL, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(
-          batch.map((t) => ({
-            to: t.token,
-            title: msg.title,
-            body: msg.body,
-            data: msg.data ?? {},
-            sound: 'default',
-            channelId: msg.category === 'reminders' || msg.category === 'dailyTasks' ? 'reminders' : 'default',
-          })),
-        ),
+      await admin.messaging.createPush({
+        messageId: ID.unique(),
+        title: msg.title,
+        body: msg.body,
+        users: recipients.slice(i, i + MAX_USERS_PER_MESSAGE),
+        data: toStringMap(msg.data),
       });
-      const json = (await res.json()) as { data?: ExpoTicket[] };
-      const tickets = json.data ?? [];
-      await Promise.all(
-        tickets.map(async (ticket, idx) => {
-          const target = batch[idx];
-          if (target && ticket.status === 'error' && ticket.details?.error === 'DeviceNotRegistered') {
-            await updateRow<ProfileRow>(admin, TABLES.profiles, target.userId, { expoPushToken: null });
-          }
-        }),
-      );
     } catch (e) {
-      log?.(`expo push failed: ${String(e)}`);
+      // Users without a registered device, or no FCM provider configured yet — the in-app row
+      // above still reaches them, so a failed push is never fatal.
+      log?.(`push failed: ${String(e)}`);
     }
   }
 }

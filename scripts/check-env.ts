@@ -16,7 +16,7 @@ const REQUIRED = [
   'EXPO_PUBLIC_ACCOUNT_DELETION_URL',
 ] as const;
 
-const OPTIONAL = ['EXPO_PUBLIC_REVENUECAT_IOS_KEY', 'EAS_PROJECT_ID'] as const;
+const OPTIONAL = ['EXPO_PUBLIC_REVENUECAT_IOS_KEY', 'EXPO_PUBLIC_APPWRITE_FCM_PROVIDER_ID'] as const;
 
 const missing = REQUIRED.filter((k) => !process.env[k]?.trim());
 const missingOptional = OPTIONAL.filter((k) => !process.env[k]?.trim());

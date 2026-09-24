@@ -26,7 +26,7 @@ Legend: `[x]` done · `[~]` partially done (see notes) · `[ ]` not started
 - [x] **10. Dropout monitor + replacement recruiting** (warn 48h, drop 72h, slot reopen, invites,
       developer daily summary).
 - [x] **11. Notifications** — token registration, local pending-task reminder, push via functions
-      (`_shared/push.ts`), role-aware deep links, notification centre.
+      (`_shared/push.ts`, Appwrite Messaging → FCM), role-aware deep links, notification centre.
 - [x] **12. RevenueCat** — init/identify (developer only), offerings paywall, credit packs, Pro,
       restore, webhook with idempotent grants.
 - [x] **13. Dashboards, Points/badges, Leaderboard, Guide, Settings, account deletion.**
@@ -72,6 +72,10 @@ Legend: `[x]` done · `[~]` partially done (see notes) · `[ ]` not started
   for tables/buckets/config; `appwrite/appwrite.json` declares the Functions for `appwrite push`.
 - **Functions are bundled with esbuild** (shared domain code + zod + node-appwrite inlined) into
   `appwrite/functions/dist/<name>/main.js`, so each deployment is self-contained.
+- **No paid Expo services.** Push notifications use Appwrite Messaging with an FCM provider: the
+  app registers its native FCM token as an Appwrite push target and functions call
+  `messaging.createPush({ users })`. No Expo push service, no `EAS_PROJECT_ID`, no `eas.json` —
+  builds are local (`expo run:android`, `expo prebuild` + `./gradlew bundleRelease`).
 - **Paywall is custom UI** on RevenueCat Offerings (matches the design system);
   `react-native-purchases-ui` is not installed.
 - **Lottie animations are generated in code** (`components/motion/lottie/builders.ts`) so they're

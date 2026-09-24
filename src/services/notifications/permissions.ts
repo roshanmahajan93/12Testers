@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
@@ -50,21 +49,17 @@ export async function requestPermission(): Promise<PermissionState> {
   return next.status as PermissionState;
 }
 
-/** Expo push token for this device, or null on simulators / missing projectId / denied. */
-export async function getExpoPushToken(): Promise<string | null> {
-  if (!Device.isDevice) return null;
-  const projectId =
-    (Constants.expoConfig?.extra as { eas?: { projectId?: string } } | undefined)?.eas?.projectId ??
-    Constants.easConfig?.projectId;
-  if (!projectId) {
-    logger.warn('EAS projectId missing — push notifications disabled');
-    return null;
-  }
+/**
+ * Native FCM device token (Android). Registered with Appwrite Messaging, which sends through
+ * Firebase directly — we do not use Expo's push service. Null on simulators / iOS / errors.
+ */
+export async function getFcmToken(): Promise<string | null> {
+  if (!Device.isDevice || Platform.OS !== 'android') return null;
   try {
-    const { data } = await Notifications.getExpoPushTokenAsync({ projectId });
-    return data;
+    const token = await Notifications.getDevicePushTokenAsync();
+    return typeof token.data === 'string' ? token.data : null;
   } catch (e) {
-    logger.warn('getExpoPushTokenAsync failed', e);
+    logger.warn('getDevicePushTokenAsync failed (is google-services.json configured?)', e);
     return null;
   }
 }

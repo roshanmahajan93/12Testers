@@ -128,14 +128,23 @@ export class FakeTables {
   }
 }
 
-export function fakeAdmin(): { admin: Admin; db: FakeTables; pushes: string[] } {
+export interface SentPush {
+  users: string[];
+  title?: string;
+  body?: string;
+  data?: Record<string, string>;
+}
+
+export function fakeAdmin(): { admin: Admin; db: FakeTables; pushes: SentPush[] } {
   const db = new FakeTables();
-  const pushes: string[] = [];
-  // Expo push is a network call — capture instead.
-  global.fetch = jest.fn(async (_url: unknown, init?: { body?: string }) => {
-    pushes.push(init?.body ?? '');
-    return { json: async () => ({ data: [] }) } as unknown as Response;
-  }) as unknown as typeof fetch;
-  const admin = { db, users: {}, storage: {}, client: {} } as unknown as Admin;
+  const pushes: SentPush[] = [];
+  // Appwrite Messaging (FCM) is a network call — capture instead.
+  const messaging = {
+    createPush: jest.fn(async (p: SentPush) => {
+      pushes.push(p);
+      return {};
+    }),
+  };
+  const admin = { db, users: {}, storage: {}, client: {}, messaging } as unknown as Admin;
   return { admin, db, pushes };
 }

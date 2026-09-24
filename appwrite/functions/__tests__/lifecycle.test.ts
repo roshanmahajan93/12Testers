@@ -27,7 +27,6 @@ function profile(userId: string, extra: Partial<ProfileRow> = {}): ProfileRow {
     country: null,
     languages: [],
     timezone: 'UTC',
-    expoPushToken: null,
     notificationPrefs: null,
     credits: 0,
     isPro: false,
@@ -168,7 +167,7 @@ describe('startTestIfReady', () => {
   });
 
   it('starts the test, activates everyone and creates day-1 tasks', async () => {
-    const { admin, db } = fakeAdmin();
+    const { admin, db, pushes } = fakeAdmin();
     const app = await seedApp(db);
     for (let i = 0; i < cfg.TESTERS_REQUIRED; i++) await seedEnrollment(db, `t${i}`);
     expect(await startTestIfReady(admin, app, cfg, new Date('2026-05-02T09:00:00Z'))).toBe(true);
@@ -183,6 +182,10 @@ describe('startTestIfReady', () => {
     // Testers can read the app while it's testing; developer is notified.
     expect(db.table(TABLES.apps).get('app1')!.$permissions).toContain('read("label:tester")');
     expect(db.rows(TABLES.notifications).some((n) => n.userId === 'dev')).toBe(true);
+    // Pushes go through Appwrite Messaging (FCM) by user id, with string-only data.
+    const devPush = pushes.find((p) => p.users.includes('dev'));
+    expect(devPush?.data).toEqual({ url: '/app/app1', kind: 'test_started', role: 'developer' });
+    expect(pushes.some((p) => p.users.length === cfg.TESTERS_REQUIRED)).toBe(true);
   });
 });
 

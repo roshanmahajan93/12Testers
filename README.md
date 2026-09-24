@@ -24,11 +24,14 @@ the build log, decisions and open TODOs.
 ## 1. Prerequisites
 
 - Node 20+ and npm
-- Android Studio (SDK + an emulator or a device with USB debugging), or an EAS account for cloud builds
+- Android Studio (SDK + JDK 17, an emulator or a device with USB debugging) — builds run locally
 - An [Appwrite](https://appwrite.io) project (Cloud or self-hosted **1.8+**, TablesDB API) and the
   [Appwrite CLI](https://appwrite.io/docs/tooling/command-line/installation)
 - A [RevenueCat](https://www.revenuecat.com) project linked to your Play Console app
-- A Firebase project (for FCM, which Expo push uses on Android)
+- A Firebase project (free) — Firebase Cloud Messaging delivers push notifications
+
+**No paid Expo services are used**: no Expo push service, no EAS Build/Update/Submit. Push goes
+Appwrite Messaging → FCM, and builds are made locally with Gradle.
 
 The app uses native modules (RevenueCat, MMKV, Skia, notifications), so it runs in a
 **development build**, not Expo Go.
@@ -49,10 +52,10 @@ npm run check-env               # fails fast if something is missing
 | `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` / `_IOS_KEY` | RevenueCat → Project → API keys (public SDK keys) |
 | `EXPO_PUBLIC_PRIVACY_URL`, `EXPO_PUBLIC_TERMS_URL` | Your hosted policy pages |
 | `EXPO_PUBLIC_ACCOUNT_DELETION_URL` | Web page explaining/performing account deletion (Play policy) |
-| `EAS_PROJECT_ID`, `EAS_OWNER` | `npx eas-cli@latest init` (needed for Expo push tokens) |
+| `EXPO_PUBLIC_APPWRITE_FCM_PROVIDER_ID` | Optional — Appwrite Messaging → Providers → your FCM provider id (only needed if you have several) |
 
-Only `EXPO_PUBLIC_*` values are bundled into the app. **Never** put the Appwrite API key, the
-RevenueCat webhook secret or an Expo access token in `EXPO_PUBLIC_*` variables.
+Only `EXPO_PUBLIC_*` values are bundled into the app. **Never** put the Appwrite API key or the
+RevenueCat webhook secret in `EXPO_PUBLIC_*` variables.
 
 ## 3. Appwrite backend
 
@@ -103,7 +106,6 @@ Settings → Environment variables), or as project-wide global variables:
 | `REVENUECAT_WEBHOOK_AUTH` | `revenuecatWebhook` | a long random secret (same value in RevenueCat) |
 | `CREDIT_PACKS` | `revenuecatWebhook` | optional JSON, e.g. `{"credits_50":50,"credits_150":150,"credits_500":500}` |
 | `PRO_ENTITLEMENT_ID` | `revenuecatWebhook` | optional, default `pro` |
-| `EXPO_ACCESS_TOKEN` | any function that pushes | optional, if you enabled enhanced push security |
 
 Functions authenticate to Appwrite with the per-execution dynamic key (scopes are declared in
 `appwrite.json`), so no API key needs to be stored for them.
@@ -125,31 +127,41 @@ no execute permissions, so only the scheduler can run them.
    Appwrite user id. Credits are granted **only** by the webhook (idempotent by event id); the app
    polls its profile after a purchase.
 
-## 5. Push notifications
+## 5. Push notifications (Appwrite Messaging + FCM — free)
 
-1. Create a Firebase project, add an Android app `com.twelvetesters`, download
-   `google-services.json` into the project root (git-ignored) or point `GOOGLE_SERVICES_JSON`
-   at it.
-2. Upload the FCM V1 service-account key to Expo: `npx eas-cli@latest credentials` → Android →
-   Push Notifications.
-3. Set `EAS_PROJECT_ID` (push tokens need it).
+1. **Firebase**: create a project, add an Android app with package `com.twelvetesters`, download
+   `google-services.json` into the project root (git-ignored) or point `GOOGLE_SERVICES_JSON` at
+   it. The build embeds it so the app can get a native FCM token.
+2. **Firebase service account**: Project settings → Service accounts → *Generate new private key*.
+3. **Appwrite**: Messaging → Providers → *Add provider* → **FCM**, paste the service-account JSON
+   and enable it. (If you add more than one FCM provider, put its id in
+   `EXPO_PUBLIC_APPWRITE_FCM_PROVIDER_ID`.)
 
-The app registers the Expo push token on the profile after the user grants permission (the
-onboarding primer asks on Android 13+). Functions send pushes through the Expo Push API and also
-write an in-app row to `notifications`. Testers additionally get a **local** reminder at their
-chosen time when tasks are still pending.
+How it works: after the user grants notification permission (onboarding primer on Android 13+),
+the app reads the device's FCM token with `getDevicePushTokenAsync()` and registers it as an
+Appwrite **push target** (`account.createPushTarget`). Functions send with
+`messaging.createPush({ users: [...] })`, and Appwrite delivers through FCM to every device of those
+users. Every push is also written as an in-app row in `notifications`. Testers additionally get a
+**local** reminder (on-device, no server) at their chosen time when tasks are still pending.
+Signing out removes the device's push target.
 
-## 6. Run
+## 6. Build & run (local, no EAS)
 
 ```bash
-npx expo run:android        # local dev build + Metro
-# or build a dev client in the cloud:
-npx eas-cli@latest build --profile development --platform android
-npm start                   # then open the dev client
+npx expo run:android                       # debug dev-client build installed on a device/emulator
+npm start                                  # Metro for the dev client
 ```
 
-EAS profiles (`eas.json`): `development` (dev client APK), `preview` (internal APK),
-`production` (AAB, auto-incremented `versionCode`, submits to the internal track as a draft).
+Release builds for Play:
+
+```bash
+npx expo prebuild --platform android       # generates ./android (git-ignored)
+# create an upload keystore once and configure signing in android/gradle.properties
+cd android && ./gradlew bundleRelease       # → app/build/outputs/bundle/release/app-release.aab
+```
+
+Upload the `.aab` to the Play Console (internal track first). Increase `android.versionCode` in
+`app.config.ts` for every upload. To test a release APK locally: `./gradlew assembleRelease`.
 
 ### Test accounts
 - **Seed data** (dev projects only):

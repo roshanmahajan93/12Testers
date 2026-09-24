@@ -20,7 +20,7 @@ Status legend: ✅ done in code · 🔧 needs console/config work · ⚠️ deci
 | Device model, Android version | Match testers to apps' requirements | Developers (in-app) |
 | Photos (screenshots you upload) | Proof of daily tasks, feedback attachments | The developer of that app |
 | App interactions (tasks, feedback, points) | Core functionality | The developer of that app |
-| Push token | Notifications | Expo push service |
+| Push token (FCM) | Notifications | Google Firebase Cloud Messaging (via Appwrite) |
 | Purchase history | Credits / Pro (RevenueCat, Google Play Billing) | RevenueCat |
 
 All data is encrypted in transit (HTTPS). Users can request deletion in-app.
@@ -48,11 +48,12 @@ All data is encrypted in transit (HTTPS). Users can request deletion in-app.
   engagement at the time of submission.
 
 ## Build & release
-- 🔧 `npx eas-cli@latest init`, set `EAS_PROJECT_ID`/`EAS_OWNER`, upload FCM V1 credentials.
-- 🔧 `eas build --profile production --platform android` → AAB → Play Console internal track.
+- 🔧 Add `google-services.json` and configure the FCM provider in Appwrite Messaging (README §5).
+- 🔧 Create an upload keystore, `npx expo prebuild` + `./gradlew bundleRelease` → AAB → Play
+  Console internal track (README §6). No Expo/EAS cloud services are used.
 - 🔧 Store listing: title, short/long description, feature graphic, phone screenshots (capture
   from a dev build), content rating questionnaire, target audience (not designed for children).
-- 🔧 Performance pass on a mid-range device with a release build (`eas build --profile preview`):
+- 🔧 Performance pass on a mid-range device with a release build (`./gradlew assembleRelease`):
   check Today card-stack swipes, dashboard rings and tab bar stay at 60 fps.
 - ✅ Reduced motion respected (OS setting or in-app override), 44pt touch targets, labels on
   icon buttons, dynamic font scaling with sensible caps.

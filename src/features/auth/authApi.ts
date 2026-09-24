@@ -9,6 +9,7 @@ import {
   sendEmailOtp,
   signInWithGoogle,
   signOutCurrent,
+  unregisterPushTarget,
   updateAccountName,
   verifyEmailOtp,
 } from '@/services/appwrite';
@@ -81,6 +82,8 @@ export const authApi = api.injectEndpoints({
     }),
     signOut: build.mutation<null, void>({
       async queryFn(_arg, { dispatch }) {
+        // Remove this device's push target while the session is still valid, then sign out.
+        await unregisterPushTarget();
         await Promise.allSettled([signOutCurrent(), disconnectRealtime(), logoutPurchases(), cancelAllLocalReminders()]);
         clearJwtCache();
         dispatch(signedOut());

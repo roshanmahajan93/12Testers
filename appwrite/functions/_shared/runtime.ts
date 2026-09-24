@@ -3,7 +3,7 @@
  * every function the same shape:
  *   parse JSON → build admin SDK → resolve caller → run → `{ ok, data }` / `{ ok:false, error }`.
  */
-import { Client, Storage, TablesDB, Users } from 'node-appwrite';
+import { Client, Messaging, Storage, TablesDB, Users } from 'node-appwrite';
 import type { ZodType } from 'zod';
 
 export interface FnRequest {
@@ -46,6 +46,7 @@ export interface Admin {
   db: TablesDB;
   users: Users;
   storage: Storage;
+  messaging: Messaging;
 }
 
 /** Server SDK with the function's dynamic API key (scopes set in appwrite.json). */
@@ -54,7 +55,13 @@ export function createAdmin(req: FnRequest): Admin {
   const project = process.env.APPWRITE_FUNCTION_PROJECT_ID ?? '';
   const key = req.headers['x-appwrite-key'] ?? process.env.APPWRITE_API_KEY ?? '';
   const client = new Client().setEndpoint(endpoint).setProject(project).setKey(key);
-  return { client, db: new TablesDB(client), users: new Users(client), storage: new Storage(client) };
+  return {
+    client,
+    db: new TablesDB(client),
+    users: new Users(client),
+    storage: new Storage(client),
+    messaging: new Messaging(client),
+  };
 }
 
 export function parseBody(req: FnRequest): unknown {

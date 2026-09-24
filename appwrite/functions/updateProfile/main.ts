@@ -20,7 +20,6 @@ export default handler(async ({ admin, body, userId }) => {
   if (input.avatarFileId !== undefined) patch.avatarFileId = input.avatarFileId;
   if (input.country !== undefined) patch.country = input.country;
   if (input.languages !== undefined) patch.languages = input.languages;
-  if (input.expoPushToken !== undefined) patch.expoPushToken = input.expoPushToken;
   if (input.notificationPrefs !== undefined) patch.notificationPrefs = JSON.stringify(input.notificationPrefs);
   if (input.timezone !== undefined) {
     if (!isValidTimeZone(input.timezone)) throw new FnError('invalid_input', 'Unknown timezone.');

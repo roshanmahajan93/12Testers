@@ -2,14 +2,16 @@ import { useEffect } from 'react';
 
 import { useMyProfile, useUpdateProfileMutation } from '@/features/profile/profileApi';
 import { deviceTimeZone } from '@/lib/device';
+import { registerPushTarget } from '@/services/appwrite/pushTargets';
 import { logger } from '@/services/logger';
 import { useAppSelector } from '@/store/hooks';
 
-import { ensureAndroidChannels, getExpoPushToken, getPermissionState } from './permissions';
+import { ensureAndroidChannels, getFcmToken, getPermissionState } from './permissions';
 
 /**
- * Once signed in with a role: make sure Android channels exist, and keep the profile's Expo push
- * token + timezone current. Never prompts — the onboarding primer asks for permission.
+ * Once signed in with a role: make sure Android channels exist, register this device's FCM token
+ * as an Appwrite push target, and keep the profile timezone current. Never prompts — the
+ * onboarding primer asks for permission.
  */
 export function usePushRegistration(): void {
   const userId = useAppSelector((s) => s.auth.userId);
@@ -21,14 +23,12 @@ export function usePushRegistration(): void {
     let cancelled = false;
     (async () => {
       await ensureAndroidChannels();
-      const patch: { expoPushToken?: string; timezone?: string } = {};
-      const tz = deviceTimeZone();
-      if (profile.timezone !== tz) patch.timezone = tz;
       if ((await getPermissionState()) === 'granted') {
-        const token = await getExpoPushToken();
-        if (token && token !== profile.expoPushToken) patch.expoPushToken = token;
+        const token = await getFcmToken();
+        if (token && !cancelled) await registerPushTarget(token);
       }
-      if (!cancelled && Object.keys(patch).length) await updateProfile({ userId, ...patch }).unwrap();
+      const tz = deviceTimeZone();
+      if (!cancelled && profile.timezone !== tz) await updateProfile({ userId, timezone: tz }).unwrap();
     })().catch((e) => logger.warn('push registration failed', e));
     return () => {
       cancelled = true;
