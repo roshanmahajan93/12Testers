@@ -8,8 +8,9 @@ Legend: `[x]` done · `[~]` partially done (see notes) · `[ ]` not started
       role accents, base UI kit, original icons, `CLAUDE.md`, `PLAN.md`.
 - [x] **2. Store + services** — RTK + RTK Query base, redux-persist + MMKV, Appwrite service
       layer (auth, db, storage, functions, realtime), logger, env check.
-- [ ] **3. Backend schema** — setup script (tables, columns, indexes, permissions, buckets, config
-      row), `appwrite.json` for functions, seed script.
+- [x] **3. Backend schema** — setup script (tables, columns, indexes, permissions, buckets, config
+      row), `appwrite.json` for functions, seed script. All 15 Functions implemented up front
+      (shared lifecycle helpers in `appwrite/functions/_shared`) so later phases only add UI.
 - [ ] **4. Auth + roles** — welcome role choice, email OTP + Google, `setRole`, tester setup,
       role redirect + guards, wrong-role sheet.
 - [ ] **5. Motion kit** — PressableScale, ProgressRing (Skia), AnimatedCounter, Shimmer, Confetti,

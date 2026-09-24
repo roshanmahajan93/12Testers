@@ -84,6 +84,9 @@ export interface ProfileRow {
   drops: number;
   ratingSum: number;
   ratingCount: number;
+  /** YYYY-MM of `tasksThisMonth` (leaderboard). */
+  monthKey: string | null;
+  tasksThisMonth: number;
 }
 
 export interface AppRow {
@@ -134,6 +137,8 @@ export interface EnrollmentRow {
   status: EnrollmentStatus;
   joinedAt: string;
   startedAt: string | null;
+  /** Tester-local day key of day 1. */
+  startDay: string | null;
   lastTaskCompletedAt: string | null;
   tasksCompleted: number;
   streak: number;
@@ -184,6 +189,8 @@ export interface CreditTransactionRow {
   type: CreditTxType;
   refId: string | null;
   note: string | null;
+  /** Unique per logical grant (e.g. `rc:<eventId>`, `reserve:<appId>`) so retries never double-apply. */
+  idempotencyKey: string;
 }
 
 export interface PointTransactionRow {
@@ -192,6 +199,7 @@ export interface PointTransactionRow {
   type: PointTxType;
   refId: string | null;
   note: string | null;
+  idempotencyKey: string;
 }
 
 export interface NotificationRow {

@@ -1,0 +1,411 @@
+{
+  "projectId": "<YOUR_APPWRITE_PROJECT_ID>",
+  "projectName": "12Testers",
+  "functions": [
+    {
+      "$id": "setRole",
+      "name": "setRole",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "users"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 15,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/setRole"
+    },
+    {
+      "$id": "updateProfile",
+      "name": "updateProfile",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:developer",
+        "label:tester"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 15,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/updateProfile"
+    },
+    {
+      "$id": "saveApp",
+      "name": "saveApp",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:developer"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 30,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/saveApp"
+    },
+    {
+      "$id": "listApp",
+      "name": "listApp",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:developer"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 30,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/listApp"
+    },
+    {
+      "$id": "manageApp",
+      "name": "manageApp",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:developer"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 60,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/manageApp"
+    },
+    {
+      "$id": "claimTest",
+      "name": "claimTest",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:tester"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 30,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/claimTest"
+    },
+    {
+      "$id": "completeDailyTask",
+      "name": "completeDailyTask",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:tester"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 30,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/completeDailyTask"
+    },
+    {
+      "$id": "submitFeedback",
+      "name": "submitFeedback",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:tester"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 15,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/submitFeedback"
+    },
+    {
+      "$id": "moderate",
+      "name": "moderate",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:developer"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 15,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/moderate"
+    },
+    {
+      "$id": "report",
+      "name": "report",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:developer",
+        "label:tester"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 15,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/report"
+    },
+    {
+      "$id": "getLeaderboard",
+      "name": "getLeaderboard",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:developer",
+        "label:tester"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 15,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/getLeaderboard"
+    },
+    {
+      "$id": "deleteAccount",
+      "name": "deleteAccount",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "label:developer",
+        "label:tester"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 300,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/deleteAccount"
+    },
+    {
+      "$id": "generateDailyTasks",
+      "name": "generateDailyTasks",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [],
+      "events": [],
+      "schedule": "5 * * * *",
+      "timeout": 900,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/generateDailyTasks"
+    },
+    {
+      "$id": "dropoutMonitor",
+      "name": "dropoutMonitor",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [],
+      "events": [],
+      "schedule": "35 * * * *",
+      "timeout": 900,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/dropoutMonitor"
+    },
+    {
+      "$id": "revenuecatWebhook",
+      "name": "revenuecatWebhook",
+      "runtime": "node-22",
+      "specification": "s-0.5vcpu-512mb",
+      "execute": [
+        "any"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 15,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "main.js",
+      "commands": "",
+      "scopes": [
+        "users.read",
+        "users.write",
+        "rows.read",
+        "rows.write",
+        "tables.read",
+        "files.read",
+        "files.write",
+        "buckets.read"
+      ],
+      "path": "functions/dist/revenuecatWebhook"
+    }
+  ]
+}

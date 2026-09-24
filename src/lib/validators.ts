@@ -31,7 +31,11 @@ export const googleGroupUrlSchema = httpsUrlSchema.refine(
   'Use a https://groups.google.com/… link',
 );
 
-export const setRoleSchema = z.object({ role: z.enum(ROLES) });
+export const setRoleSchema = z.object({
+  role: z.enum(ROLES),
+  timezone: z.string().trim().min(1).max(64).optional(),
+  displayName: z.string().trim().min(2).max(40).optional(),
+});
 
 export const testerSetupSchema = z.object({
   displayName: z.string().trim().min(2, 'At least 2 characters').max(40),
@@ -136,6 +140,8 @@ export const moderateSchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('rateFeedback'), feedbackId: ID, rating: z.number().int().min(1).max(5) }),
 ]);
 export type ModerateInput = z.infer<typeof moderateSchema>;
+
+export const leaderboardSchema = z.object({ period: z.enum(['month', 'all']).default('month') });
 
 export const reportSchema = z.object({
   targetType: z.enum(['app', 'feedback', 'tester', 'task']),
