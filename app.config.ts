@@ -12,6 +12,10 @@ const BUNDLE_ID = 'com.twelvetesters';
 const googleServicesFile = process.env.GOOGLE_SERVICES_JSON ?? './google-services.json';
 const hasGoogleServices = fs.existsSync(path.resolve(__dirname, googleServicesFile));
 
+// Appwrite's OAuth token flow redirects to `appwrite-callback-<projectId>://` — register that scheme.
+const appwriteProjectId = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID;
+const schemes = appwriteProjectId ? ['twelvetesters', `appwrite-callback-${appwriteProjectId}`] : ['twelvetesters'];
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: APP_NAME,
@@ -20,7 +24,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
-  scheme: 'twelvetesters',
+  scheme: schemes,
   userInterfaceStyle: 'automatic',
   ios: {
     bundleIdentifier: BUNDLE_ID,
@@ -41,14 +45,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     predictiveBackGestureEnabled: false,
     ...(hasGoogleServices ? { googleServicesFile } : {}),
-    // Never request QUERY_ALL_PACKAGES — Play restricts it and we do not need it.
-    blockedPermissions: ['android.permission.QUERY_ALL_PACKAGES'],
-    intentFilters: [
-      {
-        action: 'VIEW',
-        category: ['BROWSABLE', 'DEFAULT'],
-        data: [{ scheme: 'twelvetesters' }],
-      },
+    // Never request QUERY_ALL_PACKAGES — Play restricts it and we do not need it. We also don't
+    // record audio or draw over other apps.
+    blockedPermissions: [
+      'android.permission.QUERY_ALL_PACKAGES',
+      'android.permission.RECORD_AUDIO',
+      'android.permission.SYSTEM_ALERT_WINDOW',
     ],
   },
   web: {
@@ -80,6 +82,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         photosPermission: 'Attach screenshots to your daily test tasks and feedback.',
         cameraPermission: 'Take a screenshot proof of today’s test task.',
+        microphonePermission: false,
       },
     ],
   ],

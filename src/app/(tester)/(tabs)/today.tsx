@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CardStack } from '@/components/motion/CardStack';
 import { Confetti } from '@/components/motion/Confetti';
 import { LottieIllustration } from '@/components/motion/LottieIllustration';
-import { Badge, Card, EmptyState, Icon, IconButton, ProgressBar, SkeletonCardList, Text } from '@/components/ui';
+import { Badge, Card, EmptyState, ErrorState, Icon, IconButton, ProgressBar, SkeletonCardList, Text } from '@/components/ui';
 import { useDomainConfig } from '@/features/config/configApi';
 import { useUnreadCount } from '@/features/notifications/notificationsApi';
 import { parsePrefs, useMyProfile } from '@/features/profile/profileApi';
@@ -44,10 +44,12 @@ export default function Today() {
 
   const [order, setOrder] = useState<string[]>([]);
   const [removingKey, setRemovingKey] = useState<string | null>(null);
+  // Keeps a card on screen while its (optimistically completed) request is in flight.
+  const [inFlight, setInFlight] = useState<string | null>(null);
   const [justFinished, setJustFinished] = useState(false);
 
   const all = tasks.data ?? [];
-  const pending = all.filter((t) => t.status === 'pending' || t.$id === removingKey);
+  const pending = all.filter((t) => t.status === 'pending' || t.$id === removingKey || t.$id === inFlight);
   const pendingIds = pending.map((t) => t.$id);
   const orderedIds = [...order.filter((id) => pendingIds.includes(id)), ...pendingIds.filter((id) => !order.includes(id))];
   const ordered = orderedIds.map((id) => pending.find((t) => t.$id === id)!).filter(Boolean);
@@ -70,10 +72,15 @@ export default function Today() {
   };
 
   const completeTop = async (task: DailyTask) => {
+    const wasLast = pendingCount <= 1;
+    setInFlight(task.$id);
     const res = await completion.complete(task);
-    if (!res) return;
-    setRemovingKey(task.$id);
-    if (pendingCount <= 1) setJustFinished(true);
+    // Same tick → batched: the card never disappears before its fly-off animation starts.
+    if (res) {
+      setRemovingKey(task.$id);
+      if (wasLast) setJustFinished(true);
+    }
+    setInFlight(null);
   };
 
   const streak = profile ? visibleStreak(profile, todayKey) : 0;
@@ -83,6 +90,8 @@ export default function Today() {
   let body: React.ReactNode;
   if (tasks.isLoading || enrollments.isLoading) {
     body = <SkeletonCardList count={1} height={420} />;
+  } else if (tasks.isError && !tasks.data) {
+    body = <ErrorState error={tasks.error} onRetry={() => void tasks.refetch()} />;
   } else if (ordered.length > 0) {
     body = (
       <CardStack

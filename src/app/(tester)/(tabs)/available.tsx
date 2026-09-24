@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { StaggerIn } from '@/components/motion/StaggerIn';
-import { Avatar, Badge, Card, Chip, EmptyState, Header, ProgressBar, Screen, SkeletonCardList, Text } from '@/components/ui';
+import { Avatar, Badge, Card, Chip, EmptyState, ErrorState, Header, ProgressBar, Screen, SkeletonCardList, Text } from '@/components/ui';
 import { useOpenTestsQuery } from '@/features/tests/testsApi';
 import { useEligibility } from '@/features/tests/useEligibility';
 import { APP_CATEGORIES, type App, type AppCategory } from '@/lib/domain/types';
@@ -56,7 +56,7 @@ function OpenTestCard({ app, index, blocked, enrolled }: { app: App; index: numb
 }
 
 export default function Available() {
-  const { data, isLoading, isFetching, refetch } = useOpenTestsQuery();
+  const { data, isLoading, isFetching, isError, error, refetch } = useOpenTestsQuery();
   const { check, activeTests, maxActive, enrolledIds } = useEligibility();
   const [category, setCategory] = useState<AppCategory | 'all'>('all');
   const [eligibleOnly, setEligibleOnly] = useState(true);
@@ -77,6 +77,8 @@ export default function Available() {
       </ScrollView>
       {isLoading ? (
         <SkeletonCardList count={3} height={180} />
+      ) : isError && !data ? (
+        <ErrorState error={error} onRetry={refetch} />
       ) : (
         <FlashList
           data={list}

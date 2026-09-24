@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, type ReactNode } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -55,6 +55,12 @@ function StackCard({
   const y = useSharedValue(0);
   const depth = useSharedValue(index);
   const leaving = useSharedValue(0);
+  // Stable callback so parent re-renders don't restart the fly-off animation.
+  const onRemovedRef = useRef(onRemoved);
+  useEffect(() => {
+    onRemovedRef.current = onRemoved;
+  });
+  const fireRemoved = useCallback(() => onRemovedRef.current(), []);
 
   // Cards behind the top one rise into place when the stack changes.
   useEffect(() => {
@@ -72,10 +78,10 @@ function StackCard({
     leaving.set(withTiming(1, { duration: durations.slow }));
     y.set(
       withSpring(-height * 1.1, springs.fling, (done) => {
-        if (done) scheduleOnRN(onRemoved);
+        if (done) scheduleOnRN(fireRemoved);
       }),
     );
-  }, [removing, height, leaving, y, onRemoved]);
+  }, [removing, height, leaving, y, fireRemoved]);
 
   const pan = Gesture.Pan()
     .enabled(isTop && canSwipe && !removing)

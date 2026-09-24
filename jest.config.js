@@ -10,7 +10,7 @@ module.exports = {
       setupFiles: ['<rootDir>/jest.setup.ts'],
       moduleNameMapper,
       transformIgnorePatterns: [
-        'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-.*|@shopify/.*|moti|lottie-react-native|@reduxjs/.*|immer|redux-persist)',
+        'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-.*|@shopify/.*|moti|lottie-react-native|@reduxjs/.*|immer|redux-persist|react-redux)',
       ],
     },
     {

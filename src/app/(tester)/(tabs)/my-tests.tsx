@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { StaggerIn } from '@/components/motion/StaggerIn';
-import { Avatar, Badge, Card, EmptyState, Header, Screen, SegmentedControl, SkeletonCardList, Text } from '@/components/ui';
+import { Avatar, Badge, Card, EmptyState, ErrorState, Header, Screen, SegmentedControl, SkeletonCardList, Text } from '@/components/ui';
 import { ENROLLMENT_STATUS, StreakStrip } from '@/features/apps/components/AppBits';
 import { useDomainConfig } from '@/features/config/configApi';
 import { useMyEnrollmentsQuery } from '@/features/tests/testsApi';
@@ -47,7 +47,7 @@ function EnrollmentCard({ e, index, days }: { e: Enrollment; index: number; days
 export default function MyTests() {
   const cfg = useDomainConfig();
   const userId = useAppSelector((s) => s.auth.userId) ?? '';
-  const { data, isLoading, isFetching, refetch } = useMyEnrollmentsQuery(userId, { skip: !userId });
+  const { data, isLoading, isFetching, isError, error, refetch } = useMyEnrollmentsQuery(userId, { skip: !userId });
   const [tab, setTab] = useState<Tab>('active');
 
   const list = (data ?? []).filter((e) =>
@@ -67,6 +67,8 @@ export default function MyTests() {
       />
       {isLoading ? (
         <SkeletonCardList count={3} height={130} />
+      ) : isError && !data ? (
+        <ErrorState error={error} onRetry={refetch} />
       ) : (
         <FlashList
           data={list}

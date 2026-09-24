@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
@@ -62,6 +62,10 @@ export function Confetti({ count = 44, duration = 2600, onDone }: { count?: numb
   const theme = useTheme();
   const reduceMotion = useReduceMotion();
   const progress = useSharedValue(0);
+  const onDoneRef = useRef(onDone);
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  });
 
   const pieces = useMemo<Piece[]>(() => {
     const palette = [theme.accent.gradient[0], theme.accent.gradient[1], theme.colors.warning, theme.colors.streak, '#FFFFFF'];
@@ -79,13 +83,13 @@ export function Confetti({ count = 44, duration = 2600, onDone }: { count?: numb
 
   useEffect(() => {
     if (reduceMotion) {
-      onDone?.();
+      onDoneRef.current?.();
       return;
     }
     progress.set(withDelay(60, withTiming(1, { duration, easing: Easing.out(Easing.quad) })));
-    const t = setTimeout(() => onDone?.(), duration + 100);
+    const t = setTimeout(() => onDoneRef.current?.(), duration + 100);
     return () => clearTimeout(t);
-  }, [duration, onDone, progress, reduceMotion]);
+  }, [duration, progress, reduceMotion]);
 
   if (reduceMotion) return null;
   return (

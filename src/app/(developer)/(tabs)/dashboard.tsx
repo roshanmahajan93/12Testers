@@ -1,10 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { AnimatedCounter } from '@/components/motion/AnimatedCounter';
 import { StaggerIn } from '@/components/motion/StaggerIn';
-import { Badge, Button, EmptyState, Header, IconButton, ListRow, Screen, SkeletonCardList, Text } from '@/components/ui';
+import { Badge, Button, EmptyState, ErrorState, Header, IconButton, ListRow, Screen, SkeletonCardList, Text } from '@/components/ui';
 import { AppProgressCard } from '@/features/apps/components/AppBits';
 import { useMyAppsQuery } from '@/features/apps/appsApi';
 import { parseNotificationData, useNotificationsQuery, useUnreadCount } from '@/features/notifications/notificationsApi';
@@ -74,7 +74,7 @@ export default function Dashboard() {
                 icon={data.kind === 'tester_dropped' ? 'person-remove-outline' : data.kind === 'feedback' ? 'chatbubble-ellipses-outline' : 'sparkles-outline'}
                 title={n.title}
                 subtitle={n.body}
-                onPress={() => (data.url ? router.push(data.url as never) : router.push('/notifications'))}
+                onPress={() => router.push((data.url ?? '/notifications') as Href)}
               />
             );
           })}
@@ -88,6 +88,8 @@ export default function Dashboard() {
 
       {apps.isLoading ? (
         <SkeletonCardList count={2} height={170} />
+      ) : apps.isError ? (
+        <ErrorState error={apps.error} onRetry={refresh} />
       ) : live.length === 0 ? (
         <EmptyState
           illustration="empty"

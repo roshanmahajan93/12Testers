@@ -29,10 +29,6 @@ import { radii, space } from '@/theme/tokens';
 
 const PRO_PERKS = ['Boosted listing for 7 days — shown first to testers', 'Invites sent to twice as many high-reputation testers', 'Priority access to top testers'];
 
-function isSubscription(p: PurchasesPackage): boolean {
-  return p.product.subscriptionPeriod !== null || p.packageType !== 'CUSTOM';
-}
-
 function creditsIn(p: PurchasesPackage): number | null {
   const m = /credits?_(\d+)/i.exec(p.product.identifier);
   return m ? Number(m[1]) : null;
@@ -49,7 +45,7 @@ function PackageCard({ pkg, selected, onPress }: { pkg: PurchasesPackage; select
     transform: [{ scale: 1 + t.value * 0.015 }],
   }));
   const credits = creditsIn(pkg);
-  const sub = isSubscription(pkg) && credits === null;
+  const sub = credits === null;
   return (
     <PressableScale onPress={onPress} haptic="select" accessibilityRole="radio" accessibilityState={{ selected }} accessibilityLabel={pkg.product.title}>
       <Animated.View style={[styles.pkg, { backgroundColor: selected ? accent.soft : colors.surface }, style]}>
@@ -70,6 +66,7 @@ function PackageCard({ pkg, selected, onPress }: { pkg: PurchasesPackage; select
 
 export default function Paywall() {
   useRequireRole('developer');
+  const theme = useTheme();
   const toast = useToast();
   const dispatch = useAppDispatch();
   const profile = useMyProfile();
@@ -148,7 +145,7 @@ export default function Paywall() {
         <Header title="Credits & Pro" back subtitle={`Balance: ${profile.data?.credits ?? 0} credits`} />
 
         <StaggerIn index={0}>
-          <View style={[styles.proCard, { borderColor: pro.active ? 'transparent' : 'transparent' }]}>
+          <View style={[styles.proCard, { borderColor: theme.colors.border, backgroundColor: theme.colors.surface }]}>
             <View style={styles.proHead}>
               <Text variant="h2">12Testers Pro</Text>
               {pro.active || profile.data?.isPro ? <Badge label="Active" tone="success" icon="checkmark" /> : null}

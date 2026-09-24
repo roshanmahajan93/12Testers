@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { StaggerIn } from '@/components/motion/StaggerIn';
-import { Button, Card, EmptyState, Header, Screen, SegmentedControl, SkeletonRows, Text } from '@/components/ui';
+import { Button, Card, EmptyState, ErrorState, Header, Screen, SegmentedControl, SkeletonRows, Text } from '@/components/ui';
 import { AppIdentity, AppStatusBadge, useAppProgress } from '@/features/apps/components/AppBits';
 import { useMyAppsQuery } from '@/features/apps/appsApi';
 import type { App } from '@/lib/domain/types';
@@ -39,7 +39,7 @@ function AppRowCard({ app }: { app: App }) {
 
 export default function MyApps() {
   const userId = useAppSelector((s) => s.auth.userId) ?? '';
-  const { data, isLoading, isFetching, refetch } = useMyAppsQuery(userId, { skip: !userId });
+  const { data, isLoading, isFetching, isError, error, refetch } = useMyAppsQuery(userId, { skip: !userId });
   const [filter, setFilter] = useState<Filter>('all');
 
   const filtered = (data ?? []).filter((a) =>
@@ -67,6 +67,8 @@ export default function MyApps() {
       />
       {isLoading ? (
         <SkeletonRows count={4} />
+      ) : isError && !data ? (
+        <ErrorState error={error} onRetry={refetch} />
       ) : filtered.length === 0 ? (
         <EmptyState
           illustration="empty"

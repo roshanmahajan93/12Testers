@@ -16,3 +16,4 @@ export * from './Skeleton';
 export * from './Text';
 export * from './Toaster';
 export * from './Toggle';
+export * from './ErrorState';
