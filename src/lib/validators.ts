@@ -40,10 +40,10 @@ export const setRoleSchema = z.object({
 export const testerSetupSchema = z.object({
   displayName: z.string().trim().min(2, 'At least 2 characters').max(40),
   deviceModel: z.string().trim().min(2).max(80),
-  androidVersion: z.coerce.number().int().min(5).max(30),
-  country: z.string().trim().min(2).max(56),
+  androidVersion: z.number().int().min(5).max(30),
+  country: z.string().trim().min(2, 'Enter your country').max(56),
   languages: z.array(z.string().trim().min(2).max(24)).min(1, 'Pick at least one language').max(6),
-  maxActiveTests: z.coerce.number().int().min(1).max(10),
+  maxActiveTests: z.number().int().min(1).max(10),
 });
 export type TesterSetupInput = z.infer<typeof testerSetupSchema>;
 
@@ -68,8 +68,8 @@ export const updateProfileSchema = z
     notificationPrefs: notificationPrefsSchema,
     companyName: z.string().trim().max(60).nullable(),
     deviceModel: z.string().trim().min(2).max(80),
-    androidVersion: z.coerce.number().int().min(5).max(30),
-    maxActiveTests: z.coerce.number().int().min(1).max(10),
+    androidVersion: z.number().int().min(5).max(30),
+    maxActiveTests: z.number().int().min(1).max(10),
   })
   .partial();
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
@@ -95,8 +95,8 @@ export const appLinksSchema = z.object({
 });
 
 export const appRequirementsSchema = z.object({
-  minReputation: z.coerce.number().int().min(0).max(90),
-  minAndroidVersion: z.coerce.number().int().min(0).max(30),
+  minReputation: z.number().int().min(0).max(90),
+  minAndroidVersion: z.number().int().min(0).max(30),
   generalInstructions: z.string().trim().max(1000),
 });
 

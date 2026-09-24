@@ -53,10 +53,10 @@ export const authApi = api.injectEndpoints({
       },
     }),
     /** Server assigns the role label once. The client never writes roles directly. */
-    setRole: build.mutation<Profile, { role: Role }>({
-      async queryFn({ role }, { dispatch }) {
+    setRole: build.mutation<Profile, { role: Role; timezone?: string; displayName?: string }>({
+      async queryFn(input, { dispatch }) {
         try {
-          const profile = await callFunction<Profile>(FUNCTIONS.setRole, { role });
+          const profile = await callFunction<Profile>(FUNCTIONS.setRole, input);
           clearJwtCache(); // labels changed → old JWT has stale roles
           dispatch(roleAssigned(profile.role));
           return { data: profile };
